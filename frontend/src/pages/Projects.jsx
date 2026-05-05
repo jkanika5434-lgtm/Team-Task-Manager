@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useCallback, useEffect, useState } from 'react';
+import { useAuth } from '../context/useAuth';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 
@@ -11,9 +11,7 @@ const Projects = () => {
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ name: '', description: '', memberIds: [] });
 
-  useEffect(() => { fetchAll(); }, []);
-
-  const fetchAll = async () => {
+  const fetchAll = useCallback(async () => {
     try {
       const [projRes, usersRes] = await Promise.all([
         api.get('/projects'),
@@ -23,7 +21,9 @@ const Projects = () => {
       setUsers(usersRes.data || []);
     } catch { toast.error('Failed to load'); }
     finally { setLoading(false); }
-  };
+  }, []);
+
+  useEffect(() => { fetchAll(); }, [fetchAll]);
 
   const handleCreate = async () => {
     if (!form.name.trim()) { toast.error('Project name required!'); return; }

@@ -1,7 +1,7 @@
 // Ye Security Guard hai — bina login ke koi page nahi dekhne deta
 
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
   const { user, loading } = useAuth();

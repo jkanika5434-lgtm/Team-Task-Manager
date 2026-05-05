@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useCallback, useEffect, useState } from 'react';
+import { useAuth } from '../context/useAuth';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 
@@ -18,9 +18,7 @@ const Tasks = () => {
     status: 'pending', assignedTo: '', project: '', deadline: ''
   });
 
-  useEffect(() => { fetchAll(); }, []);
-
-  const fetchAll = async () => {
+  const fetchAll = useCallback(async () => {
     try {
       const [tasksRes, projectsRes] = await Promise.all([
         api.get('/tasks'),
@@ -38,7 +36,9 @@ const Tasks = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user.role]);
+
+  useEffect(() => { fetchAll(); }, [fetchAll]);
 
   const openCreate = () => {
     setEditTask(null);

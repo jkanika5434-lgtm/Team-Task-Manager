@@ -1,24 +1,25 @@
-// Ye GLOBAL STATE hai — login info poori app mein share hoti hai
-// Bina is ke har component mein alag se check karna padta
+import { useState } from 'react';
+import { AuthContext } from './auth-context';
 
-import { createContext, useContext, useState, useEffect } from 'react';
-import api from '../api/axios';
+const getStoredUser = () => {
+  const token = localStorage.getItem('token');
+  const savedUser = localStorage.getItem('user');
 
-const AuthContext = createContext();
+  if (!token || !savedUser) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(savedUser);
+  } catch {
+    localStorage.removeItem('user');
+    return null;
+  }
+};
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Page reload pe check karo — kya pehle se login tha?
-    const token = localStorage.getItem('token');
-    const savedUser = localStorage.getItem('user');
-    if (token && savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
-  }, []);
+  const [user, setUser] = useState(getStoredUser);
+  const loading = false;
 
   const login = (token, userData) => {
     localStorage.setItem('token', token);
@@ -38,6 +39,3 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-
-// Custom hook — useAuth() easily use kar sakte hain kisi bhi component mein
-export const useAuth = () => useContext(AuthContext);

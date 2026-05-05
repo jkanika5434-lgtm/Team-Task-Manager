@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useCallback, useEffect, useState } from 'react';
+import { useAuth } from '../context/useAuth';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 
@@ -9,11 +9,7 @@ const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [statsRes, tasksRes] = await Promise.all([
         api.get('/tasks/stats'),
@@ -26,7 +22,11 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const statCards = [
     { label: 'Total Tasks', value: stats.total, color: '#2563eb', bg: '#eff6ff', icon: '📋' },
