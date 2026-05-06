@@ -4,8 +4,8 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
+let isDbConnected = false;
 
-// Middleware
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -13,27 +13,32 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Test route — ye pehle daalo
 app.get('/', (req, res) => {
-  res.json({ message: 'Backend is working!' });
+  res.json({
+    message: 'Backend is working!',
+    database: isDbConnected ? 'connected' : 'connecting'
+  });
 });
 
-// Routes
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/projects', require('./routes/projectRoutes'));
 app.use('/api/tasks', require('./routes/taskRoutes'));
 
-// MongoDB connect karo — phir server start karo
 const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
-    console.log('✅ MongoDB Connected');
-    app.listen(PORT, '0.0.0.0', () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-    });
+    isDbConnected = true;
+    console.log('MongoDB Connected');
   })
   .catch((err) => {
-    console.error('❌ MongoDB Error:', err.message);
-    process.exit(1);
+    console.error('MongoDB Error:', err.message);
   });
