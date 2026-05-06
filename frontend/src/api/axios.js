@@ -4,7 +4,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://team-task-manager-production-e042.up.railway.app/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://team-task-manager-production-6fd2.up.railway.app/api',
 });
 
 // Har request mein automatically token attach karo
